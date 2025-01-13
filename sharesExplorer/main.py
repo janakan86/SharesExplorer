@@ -16,15 +16,15 @@ import yfinance as yf
 class CalculationData:
     def __init__(self):
         self.dividendsDF = pd.read_excel(
-            "/Users/kanaganayagamjanakan/Library/CloudStorage/OneDrive-Personal/SharePurchases.xlsx",
-            sheet_name="dividends")
+            "/<path to excel file with dividends details>.xlsx",
+            sheet_name="<sheet name>")
         self.purchasesDF = pd.read_excel(
-            "/Users/kanaganayagamjanakan/Library/CloudStorage/OneDrive-Personal/SharePurchases.xlsx",
-            sheet_name="purchases")
+            "//<path to excel file with purchases details>.xlsx",
+            sheet_name="<sheet name>")
 
         self.salesDF = pd.read_excel(
-            "/Users/kanaganayagamjanakan/Library/CloudStorage/OneDrive-Personal/SharePurchases.xlsx",
-            sheet_name="sales")
+            "/<path to excel file with dividends sales details>.xlsx",
+            sheet_name="<sheet name>")
 
         self.latest_closing_price_df = self.load_latest_closing_price()
 
