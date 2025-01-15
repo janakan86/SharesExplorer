@@ -93,16 +93,12 @@ class ShareCalculations:
 
     def calculate_weighted_CAGR_for_all_codes(self):
 
-        self.purchasesDF = pd.read_excel(
-            "/Users/kanaganayagamjanakan/Library/CloudStorage/OneDrive-Personal/SharePurchases.xlsx",
-            sheet_name="purchases")
-
         calculated_cagrs_df = pd.DataFrame(
             columns=['code', 'total Units purchased', 'Total Purchase value', 'total units sold', 'total sales value',
                      'current value', 'total dividends', 'total value', 'current profit', 'cagr'])
 
         calculated_key_numbers_df = pd.DataFrame(columns=['key stats'])
-        codes_df = self.purchasesDF['code'].unique()
+        codes_df = self.calculation_data.purchasesDF['code'].unique()
 
         numerator = 0
         denominator = 0

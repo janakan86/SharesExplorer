@@ -2,16 +2,17 @@ import pandas as pd
 import CalculationHelper
 class CalculationData:
     def __init__(self):
-        self.dividendsDF = pd.read_excel(
-            "/<path to excel file with dividends details>.xlsx",
-            sheet_name="<sheet name>")
         self.purchasesDF = pd.read_excel(
-            "//<path to excel file with purchases details>.xlsx",
-            sheet_name="<sheet name>")
+            CalculationHelper.get_property("sharepurchases.filepath"),
+            sheet_name=CalculationHelper.get_property("sharepurchases.sheetname"))
 
         self.salesDF = pd.read_excel(
-            "/<path to excel file with dividends sales details>.xlsx",
-            sheet_name="<sheet name>")
+            CalculationHelper.get_property("sharesales.filepath"),
+            sheet_name=CalculationHelper.get_property("sharesales.sheetname"))
+
+        self.dividendsDF = pd.read_excel(
+            CalculationHelper.get_property("dividends.filepath"),
+            sheet_name=CalculationHelper.get_property("dividends.sheetname"))
 
         self.latest_closing_price_df = self.load_latest_closing_price()
 

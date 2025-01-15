@@ -50,8 +50,21 @@ def to_datetime(date):
                  / np.timedelta64(1, 's'))
     return datetime.fromtimestamp(timestamp, timezone.utc)
 
+
 def write_to_excel(data_frame, sheet_name):
     with pd.ExcelWriter(
             "/Users/kanaganayagamjanakan/Documents/cagr.xlsx"
     ) as writer:
         data_frame.to_excel(writer, sheet_name=sheet_name)
+
+
+def get_property(property_name):
+    properties = {}
+    with open('config/config.properties', 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line and not line.startswith('#'):  # Ignore empty lines and comments
+                key, value = line.split(':', 1)  # Split key-value pair
+                if key.strip() == property_name:
+                    return value.strip()
+    return ""
