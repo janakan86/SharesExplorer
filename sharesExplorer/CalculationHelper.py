@@ -4,6 +4,7 @@ from datetime import datetime
 from datetime import date
 from datetime import timezone
 import numpy as np
+import os
 
 
 def get_todays_price(code):
@@ -53,14 +54,17 @@ def to_datetime(date):
 
 def write_to_excel(data_frame, sheet_name):
     with pd.ExcelWriter(
-            "/Users/kanaganayagamjanakan/Documents/cagr.xlsx"
+         construct_path(get_property("savefilepath"))+ "/cagr.xlsx"
     ) as writer:
         data_frame.to_excel(writer, sheet_name=sheet_name)
 
 
 def get_property(property_name):
     properties = {}
-    with open('config/config.properties', 'r') as file:
+    root_dir = os.path.dirname(os.path.abspath(__file__)) # Gets the directory of the current script
+    config_path = os.path.join(root_dir, 'config', 'config.properties')
+
+    with open(config_path, 'r') as file:
         for line in file:
             line = line.strip()
             if line and not line.startswith('#'):  # Ignore empty lines and comments
@@ -68,3 +72,9 @@ def get_property(property_name):
                 if key.strip() == property_name:
                     return value.strip()
     return ""
+
+
+def construct_path(path):
+    root_dir = os.path.dirname(os.path.abspath(__file__)) # Gets the directory of the current script
+    config_path = os.path.join(root_dir, path)
+    return config_path

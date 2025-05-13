@@ -3,15 +3,15 @@ import CalculationHelper
 class CalculationData:
     def __init__(self):
         self.purchasesDF = pd.read_excel(
-            CalculationHelper.get_property("sharepurchases.filepath"),
+            CalculationHelper.construct_path(CalculationHelper.get_property("sharepurchases.filepath")),
             sheet_name=CalculationHelper.get_property("sharepurchases.sheetname"))
 
         self.salesDF = pd.read_excel(
-            CalculationHelper.get_property("sharesales.filepath"),
+            CalculationHelper.construct_path(CalculationHelper.get_property("sharesales.filepath")),
             sheet_name=CalculationHelper.get_property("sharesales.sheetname"))
 
         self.dividendsDF = pd.read_excel(
-            CalculationHelper.get_property("dividends.filepath"),
+            CalculationHelper.construct_path(CalculationHelper.get_property("dividends.filepath")),
             sheet_name=CalculationHelper.get_property("dividends.sheetname"))
 
         self.latest_closing_price_df = self.load_latest_closing_price()
