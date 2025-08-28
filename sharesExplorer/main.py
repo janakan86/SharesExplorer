@@ -28,6 +28,8 @@ sc.calculate_weighted_CAGR_for_all_codes()
 print('weighted CAGR for code VTS')
 sc.calculate_weighted_CAGR('VHY')
 
+sc.calculate_XIRR()
+
 # to do
 # -> add variable for printing and print only if set (similar to logging on off)
 
