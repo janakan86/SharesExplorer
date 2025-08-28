@@ -1,24 +1,16 @@
 import pandas as pd
 import CalculationData
 import CalculationHelper
+from pyxirr import xirr
+from datetime import date
+
 class ShareCalculations:
     def __init__(self, calculation_data):
         self.calculation_data = calculation_data
 
-    # the gap between the money earned - money spent
-    def calculateTotalGain(self):
-        # currentValue of shares + total dividends = total value
-        # total purchases - dividends = total money spent
-
-        total_purchase = self.calculation_data.purchasesDF[
-                             "total"].sum() / 2  # dividing by 2 to prevent the total row getting added
-        total_dividends = self.calculation_data.dividendsDF[
-                              "amount"].sum() / 2  # dividing by 2 to prevent the total row getting added
-        total_sales = self.calculation_data.salesDF[
-                          "total"].sum() / 2  # dividing by 2 to prevent the total row getting added
-
+    #calculate the current market value of the portfolio
+    def calculateCurrentMarketvalue(self):
         current_Value = 0
-
         codes_df = self.calculation_data.purchasesDF['code'].unique()
 
         for code in codes_df:
@@ -33,13 +25,31 @@ class ShareCalculations:
                 current_Value = current_Value + (
                         (units_of_purchase - units_of_sales) * self.calculation_data.latest_closing_price_df[str(code)])
 
-        print("current market Value " + str(current_Value))
+        return current_Value    
+
+
+    # the gap between the money earned - money spent
+    def calculateTotalGain(self):
+        # currentValue of shares + total dividends = total value
+        # total purchases - dividends = total money spent
+
+        total_purchase = self.calculation_data.purchasesDF[
+                             "total"].sum() / 2  # dividing by 2 to prevent the total row getting added
+        total_dividends = self.calculation_data.dividendsDF[
+                              "amount"].sum() / 2  # dividing by 2 to prevent the total row getting added
+        total_sales = self.calculation_data.salesDF[
+                          "total"].sum() / 2  # dividing by 2 to prevent the total row getting added
+
+
+        current_market_value = self.calculateCurrentMarketvalue();
+
+        print("current market Value " + str(current_market_value))
         money_spent = total_purchase - total_dividends - total_sales
         print("total money_spent " + str(money_spent))
 
         print("total dividends received " + str(total_dividends))
-        print("gain  " + str(current_Value - money_spent))
-        pt_gain = ((current_Value - money_spent) / money_spent) * 100
+        print("gain  " + str(current_market_value - money_spent))
+        pt_gain = ((current_market_value - money_spent) / money_spent) * 100
         print("percentage of gain on money spent", str(pt_gain))
 
     def calculate_sales_profit_for_code(self, code, purchases_of_code_df=None, sales_of_code_df=None):
@@ -296,3 +306,33 @@ class ShareCalculations:
                              "amount"].sum() / 2  # dividing by 2 to prevent the total row getting added
 
         return (total_dividend / total_purchase) * 100
+
+
+    def calculate_XIRR(self):
+
+        purchases = self.calculation_data.purchasesDF.loc[(self.calculation_data.purchasesDF["date"].notnull()) & (self.calculation_data.purchasesDF["date"] != ""), "total"].tolist()
+        purchases = [x* -1 for x in purchases] #negate the purchase values
+        purchase_dates =  self.calculation_data.purchasesDF.loc[(self.calculation_data.purchasesDF["date"].notnull(),"date")].tolist()
+        purchase_dates =  [x.date() for x in purchase_dates ]
+        
+        sales = self.calculation_data.salesDF.loc[(self.calculation_data.salesDF["date"].notnull()) & (self.calculation_data.salesDF["date"] != ""), "total"].tolist()
+        sales_dates = self.calculation_data.salesDF.loc[(self.calculation_data.salesDF["date"].notnull(),"date")].tolist()
+        sales_dates = [x.date() for x in sales_dates]
+
+        dividends = self.calculation_data.dividendsDF.loc[(self.calculation_data.dividendsDF["date"].notnull())& (self.calculation_data.dividendsDF["date"] != ""), "amount"].tolist()
+        dividends_dates = self.calculation_data.dividendsDF.loc[(self.calculation_data.dividendsDF["date"].notnull(),"date")].tolist()
+        dividends_dates = [x.date() for x in dividends_dates]
+
+        current_value = self.calculateCurrentMarketvalue()
+
+        #combine all the date values
+        dates = purchase_dates + sales_dates + dividends_dates
+        dates.append(date.today())
+
+        #combine all the cashflows
+        cashflows = purchases + sales + dividends
+        cashflows.append(current_value)
+
+        # XIRR calculation using numpy_financial
+        calculated_xirr = xirr(dates,cashflows)
+        print(f"XIRR: {calculated_xirr:.2%}")
